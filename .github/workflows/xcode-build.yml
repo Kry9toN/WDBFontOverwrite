@@ -21,8 +21,11 @@ jobs:
           echo $default | cat >default
           echo Using default scheme: $default
       - name: Build
+        env:
+          scheme: ${{ 'default' }}
         run: |
-          xcodebuild -scheme "default" clean archive -archivePath "FontOverwrite" -configuration "default"
+          if [ $scheme = default ]; then scheme=$(cat default); fi
+          xcodebuild -scheme "$scheme" clean archive -archivePath "FontOverwrite" -configuration "$scheme"
       - name: Export IPA
         run: |
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/exportArchive -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty && exit ${PIPESTATUS[0]}
